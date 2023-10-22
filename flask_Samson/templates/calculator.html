@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} TakeOff Simulator {% endblock %}</h1>
+
+<form method="post" onsubmit="return validateForm();">
+    <div class="form-group">
+        <label for="LoadWeight">Load Weight</label>
+        <input type="text" name="LoadWeight"
+               placeholder="Weight of the load" class="form-control"
+               value="{{ request.form['LoadWeight'] }}"></input>
+    </div>
+
+    <div class="form-group">
+        <label for="WeightToDestroy">Weight to Destroy</label>
+        <input type="text" name="WeightToDestroy"
+               placeholder="Weight to Destroy" class="form-control"
+               value="{{ request.form['WeightToDestroy'] }}"></input>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    <div class="box">
+        <h2>Takeoff Time</h2>
+        <p>{{ takeofftime }}</p>
+    </div>
+
+    <div class="box">
+        <h2>Takeoff Distance</h2>
+        <p>{{ takeoffdistance }}</p>
+    </div>
+
+    <div class="box">
+        <h2>Minimal Mass Load to Destroy</h2>
+        <p>{{ loadtodestroy }}</p>
+    </div>
+</form>
+<form method="post" action="/send_to_db">
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Send to db</button>
+    </div>
+</form>
+<link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+
+{% endblock %}

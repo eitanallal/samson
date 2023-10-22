@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Welcome to the Samson Console {% endblock %}</h1>
+
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Load Weight</th>
+            <th>Load Weight Destroyed</th>
+            <th>TakeOff Distance</th>
+            <th>Time</th>
+        </tr>
+        {% for line in history %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('line', line_id=line['id']) }}">
+                        {{ line['id'] }}
+                    </a>
+                    <span class="badge badge-primary">{{ line['created'] }}</span>
+                </td>
+                <td>{{ line['LoadWeight'] }}</td>
+                <td>{{ line['WeightDestroyed'] }}</td>
+                <td>{{ line['TakeOffDistance'] }}</td>
+                <td>{{ line['created_time'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

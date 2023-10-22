@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% block title %} {{ line['created_time'] }} {% endblock %}</h2>
+    <span class="badge badge-primary">{{ line['LoadWeight'] }}</span>
+    <p>{{ line['WeightDestroyed'] }}</p>
+    <p>{{ line['TakeOffDistance'] }}</p>
+{% endblock %}

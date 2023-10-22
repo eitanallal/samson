@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Create a New Line {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="LoadWeight">LoadWeight</label>
+        <input type="text" name="LoadWeight"
+               placeholder="Weight of the load" class="form-control"
+               value="{{ request.form['LoadWeight'] }}"></input>
+    </div>
+
+    <div class="form-group">
+        <label for="WeightDestroyed">WeightDestroyed</label>
+        <textarea name="WeightDestroyed" placeholder="Weight of the load destroyed"
+                  class="form-control">{{ request.form['WeightDestroyed'] }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="TakeOffDistance">TakeOffDistance</label>
+        <textarea name="TakeOffDistance" placeholder="TakeOff Distance"
+                  class="form-control">{{ request.form['TakeOffDistance'] }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+
+{% endblock %}
