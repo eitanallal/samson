@@ -6,23 +6,20 @@
     <table>
         <tr>
             <th>Id</th>
-            <th>Load Weight</th>
-            <th>Load Weight Destroyed</th>
-            <th>TakeOff Distance</th>
+            <th>Date</th>
             <th>Time</th>
+            <th>Load Weight (kg)</th>
+            <th>Load Weight Destroyed (kg)</th>
+            <th>TakeOff Distance (m)</th>
         </tr>
         {% for line in history %}
             <tr>
-                <td>
-                    <a href="{{ url_for('line', line_id=line['id']) }}">
-                        {{ line['id'] }}
-                    </a>
-                    <span class="badge badge-primary">{{ line['created'] }}</span>
-                </td>
-                <td>{{ line['LoadWeight'] }}</td>
-                <td>{{ line['WeightDestroyed'] }}</td>
-                <td>{{ line['TakeOffDistance'] }}</td>
-                <td>{{ line['created_time'] }}</td>
+                <td> {{ line[0] }} </td>
+                <td> {{ line[4] }} </td>
+                <td> {{ line[5] }} </td>
+                <td> {{ line[1] }} </td>
+                <td> {{ line[2] }} </td>
+                <td> {{ line[3] }} </td>
             </tr>
         {% endfor %}
     </table>

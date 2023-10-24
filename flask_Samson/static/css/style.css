@@ -6,11 +6,20 @@ h1 {
 }
 
 h2 {
-    /* border: 2px ;
+    border: 2px ;
     color: green;
-    text-align: left; */
-    /* padding: 5%; */
+    text-align: left;
+    padding: 5%;
     font-size: 16px;
+    
+}
+
+h3 {
+    border: 0px ;
+    color: black;
+    text-align: left;
+    padding: 0%;
+    font-size: 18px;
     
 }
 
@@ -22,7 +31,7 @@ h2 {
 table {
   font-family: arial, arial;
   border-collapse: collapse;
-  width: 70%;
+  width: 100%;
   text-align: center;
 }
 
@@ -37,8 +46,6 @@ tr:nth-child(even) {
   background-color: #dddddd;
 }
 
-/* Styles for the boxes */
-/* Default styles for the value box */
 .value-box {
     width: 100px;
     height: 100px;
@@ -68,4 +75,45 @@ tr:nth-child(even) {
 .white {
     background-color: white;
     color: black;
+}
+
+.top-right-temperature {
+    position: absolute;
+    top: 10px; /* Adjust this value to position it as desired */
+    right: 10px; /* Adjust this value to position it as desired */
+    background-color: #f8f9fa; /* Background color */
+    padding: 5px;
+    border: 1px solid #ccc; /* Add a border for better visibility */
+    border-radius: 5px;
+  }
+
+.image-container {
+    text-align: right; /* Align the image and text to the right */
+    margin-top: -630px; /* Adjust the margin as needed */
+}
+
+/* Style for the image */
+.image-container img {
+    width: 70px; /* Set the width of the image as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Style for the temperature display */
+.top-right-temperature {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+}
+
+/* Style for good temperature (between 15 and 30) */
+.top-right-temperature.good {
+    background-color: green;
+}
+
+/* Style for bad temperature (not between 15 and 30) */
+.top-right-temperature.bad {
+    background-color: red;
 }
