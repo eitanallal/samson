@@ -14,7 +14,7 @@ class Weather:
         self.params = {
             'latitude': '52.52',
             'longitude': '13.41',
-            'hourly': 'temperature_2m,relativehumidity_2m,windspeed_10m,winddirection_10m,pressure_msl,is_day',
+            'hourly': 'temperature_2m,relativehumidity_2m,windspeed_10m,winddirection_10m,pressure_msl,precipitation_probability,is_day',
             'start_date':'2023-01-01',
             'end_date': '2023-01-01'
         }
@@ -34,15 +34,19 @@ class Weather:
             winddirection_10m = np.array(data['hourly']['winddirection_10m'])
             pressure_msl = np.array(data['hourly']['pressure_msl'])
             is_day = np.array(data['hourly']['is_day'])
+            precipitation = np.array(data['hourly']['precipitation_probability'])
             time = np.array(data['hourly']['time'])
             
-
-            data_table = {'time': time,
+            time_only = np.array([s.split('T')[1] for s in time])
+            date_only = np.array([s.split('T')[0] for s in time])
+            data_table = {'date':date_only,
+                          'time': time_only,
                           'temperature': temperature,
                           'humidity': humidity,
                           'windspeed': windspeed,
                           'winddirection_10m': winddirection_10m,
                           'pressure_msl': pressure_msl,
+                          'precipitation': precipitation,
                           'is_day': is_day}
             
             df = pd.DataFrame(data_table)
@@ -91,22 +95,12 @@ class Weather:
         if response.status_code == 200:
             data = json.loads(response.text)
             temperature = data['current']['temperature_2m']
-            windspeed = data['current']['windspeed_10m']
-            winddirection_10m = data['current']['winddirection_10m']
-            pressure_msl = data['current']['pressure_msl']
-            is_day = data['current']['is_day']
-            time = data['current']['time']
+            # windspeed = data['current']['windspeed_10m']
+            # winddirection_10m = data['current']['winddirection_10m']
+            # pressure_msl = data['current']['pressure_msl']
+            # is_day = data['current']['is_day']
+            # time = data['current']['time']
             
-
-            data_table = {'time': time,
-                          'temperature': temperature,
-                          'windspeed': windspeed,
-                          'winddirection_10m': winddirection_10m,
-                          'pressure_msl': pressure_msl,
-                          'is_day': is_day}
-            # print(data_table)
-            
-            # self.df = df
             return temperature
 
         else:

@@ -5,12 +5,14 @@
 
     <table>
         <tr>
+            <th>Date</th> 
             <th>Time</th> 
             <th>Temperature (°C)</th>
             <th>Humidity (%)</th>
             <th>Windspeed (kmh)</th>
             <th>Wind direction (°)</th>
             <th>Pressure (hPa)</th>
+            <th>Precipitation (%)</th>
             <th>Day/Night</th>
         </tr>
         {% for line in weather_table %}
@@ -21,8 +23,10 @@
                 <td>{{ line[3] }}</td>
                 <td>{{ line[4] }}</td>
                 <td>{{ line[5] }}</td>
+                <td>{{ line[6] }}</td>
+                <td>{{ line[7] }}</td>
                 <td>
-                    {% if line[6] == 1 %}
+                    {% if line[8] == 1 %}
                         <img src="{{ url_for('static', filename='images/sun.png') }}" alt="Sun" width="20px" height="auto">
                     {% else %}
                         <img src="{{ url_for('static', filename='images/moon.png') }}" alt="Moon" width="20px" height="auto">

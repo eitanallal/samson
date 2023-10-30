@@ -1,6 +1,11 @@
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect
 from werkzeug.exceptions import abort
+import weather
+import numpy as np
+import pandas as pd
+
+forecast = weather.Weather()
 
 class PhysicalModel():
     
@@ -27,6 +32,7 @@ class PhysicalModel():
         self.TakeOffTime = round(self.TakeOffSpeed/self.Acceleration)
         self.TakeOffDistance = round(self.TakeOffSpeed*self.TakeOffTime/2)
         self.WeightLoadMax = round(self.Thrust*self.TakeOffTimeMax/self.TakeOffSpeed-self.WeightEmpty)
+        self.WeightBalance = self.WeightLoadMax #kg
         
     def update_parameters(self):
         self.WeightLoad = self.WeightLoadFull - self.WeightLoadToDestroy
@@ -53,23 +59,21 @@ class PhysicalModel():
     def getTakeOffDistance(self):
         return self.TakeOffDistance
     
-    # def getWeightLoadMax(self):
-    #     return self.WeightLoadMax
+    def getWeightLoadFull(self):
+        return self.WeightLoadFull
     
     def getWeightLoad(self):
         return self.WeightLoad
     
     def getLoadToDestroy(self):
-        return self.WeightLoadMax-self.WeightLoad
+        return self.WeightLoadToDestroy
 
     def setLoadToMaxLoad(self):
         self.WeightLoad = self.WeightLoadMax
         self.update_parameters()
         print(f"Load = maximum. updated parameters: \ncurrent load:{self.WeightLoad} \nRequired TakeOff Time:{self.TakeOffTime} \nRequired TakeOff Distance:{self.TakeOffDistance}\n ")
         
-
 model = PhysicalModel()
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
@@ -93,12 +97,16 @@ def index():
     conn = get_db_connection()
     history = conn.execute('SELECT * FROM history').fetchall()
     conn.close()
-    return render_template('index.html', history=history)
+    df = pd.DataFrame(history, columns=['id', 'LoadWeight', 'WeightDestroyed', 'TakeOffDistance', 'created_time'])
+    df['date'], df['time'] = df['created_time'].str.split(' ', 1).str
+    df.drop(columns=['created_time'], inplace=True)
+    # print(df)
+    return render_template('index.html', history=df.values.tolist(), temperature=forecast.get_current_temperature())
 
 @app.route('/<int:line_id>')
 def line(line_id):
     line = get_line(line_id)
-    return render_template('line.html', line=line)
+    return render_template('line.html', line=line, temperature=forecast.get_current_temperature())
 
 @app.route('/create', methods=('GET', 'POST'))
 def create():
@@ -117,11 +125,12 @@ def create():
             
             conn.commit()
             conn.close()
-            model.setLoad(float(LoadWeight))
+            model.setLoadFull(float(LoadWeight))
+            model.setWeightLoadToDestroy(float(WeightDestroyed))
             
             return redirect(url_for('index'))
 
-    return render_template('create.html')
+    return render_template('create.html', temperature=forecast.get_current_temperature())
 
 @app.route('/<int:id>/delete', methods=('POST',))
 def delete(id):
@@ -142,12 +151,13 @@ def calculator():
         if len(LoadWeight)>=1:
             model.setLoadFull(float(LoadWeight))
             model.setWeightLoadToDestroy(float(WeightToDestroy))
-    return render_template('calculator.html', takeofftime=model.getTakeOffTime(), takeoffdistance=model.getTakeOffDistance(), loadtodestroy=model.getLoadToDestroy())
+            model.WeightBalance = model.WeightLoadMax-model.getWeightLoadFull()
+    return render_template('calculator.html', takeofftime=model.getTakeOffTime(), takeoffdistance=model.getTakeOffDistance(), loadtodestroy=model.WeightBalance, temperature=forecast.get_current_temperature())
 
 @app.route('/send_to_db', methods=['POST'])
 def send_to_db():
     conn = get_db_connection()
-    LoadWeight = model.getWeightLoad()
+    LoadWeight = model.getWeightLoadFull()
     WeightDestroyed = model.getLoadToDestroy()
     TakeOffDistance = model.getTakeOffDistance()
     
@@ -156,8 +166,33 @@ def send_to_db():
     
     conn.commit()
     conn.close()
-    model.setLoad(float(LoadWeight))
+    model.setLoadFull(float(LoadWeight))
+    model.setWeightLoadToDestroy(float(LoadWeight))
             
     print("Send to the db !")
     return redirect(url_for('index'))
 
+@app.route('/weather', methods=['GET', 'POST'])
+def weather_forecast():
+    
+    if request.method == 'POST':
+        ##TODO: check the formatting here !
+        date_start = request.form['start_date']
+        date_end = request.form['end_date']
+        longitude = request.form['longitude']
+        latitude = request.form['latitude']
+        
+        forecast.set_all_params(longitude, latitude, date_start, date_end)
+        print("parameters updated")
+        forecast.get_weather()
+        return redirect(url_for('display_weather'))
+    
+    return render_template('weather.html', temperature=forecast.get_current_temperature())
+
+@app.route('/display_weather')
+def display_weather():
+    weather_table=forecast.get_weather_output()
+    print(weather_table.values.tolist())
+    return render_template('display_weather.html', weather_table=weather_table.values.tolist(), temperature=forecast.get_current_temperature())
+
+                
